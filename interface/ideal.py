@@ -416,6 +416,7 @@ class Interface:
 
         label = tk.Label(Pop_Up)
         label.pack()
+        tiempo = ttk.Label(frame_abajo, text="Tiempo: ")
 
         button = ttk.Button(Pop_Up, text = 'Evaluar' , width = 10, command = Pop_Up.destroy)
         button.pack(side=tk.BOTTOM)
@@ -497,7 +498,214 @@ class Interface:
         pass
 
     def boton_aceleracion_normal_y_tangencialf(self):
+        # funcion para la obtencion de tiempo de impacto del proyectil
+        def time_impact(self):
+            t = ((self.velocidad_inicial * (sin(self.angulo))) / (2 * self.gravedad)) + ((1 / self.gravedad) * (
+                sqrt(((self.velocidad_inicial * sin(self.angulo)) ** 2) + (2 * self.y0 * self.gravedad))))
+            print(t)
+            return t
+
+        # Ecuacion aceleracion tangencial
+        def a_tangencial(self):
+            at = (((((self.velocidad_inicial * (cos(self.angulo)))) ** 2) + (
+                        (((self.velocidad_inicial * (sin(self.angulo)))))
+                        - self.gravedad * time_impact(self)) ** 2) / (
+                              (sqrt(self.velocidad_inicial * cos(self.velocidad_inicial)) ** 2) +
+                              (self.velocidad_inicial * sin(self.angulo) - (self.gravedad * time_impact(self)))))
+            print(at)
+            return at
+
+        # Ecuacion aceleracion normal
+        def a_normal(self):
+            an = ((((self.velocidad_inicial * sin(self.angulo)) - (self.gravedad * time_impact(self))) / (
+                        1 + (tan(self.angulo)
+                             - ((self.gravedad) / self.velocidad_inicial * cos(self.angulo) * time_impact(
+                            self)))) ** 3)) / abs((self.gravedad) /
+                                                  (self.velocidad_inicial * cos(self.angulo)) ** 2)
+            print(an)
+            return an
+
+            # funcion para el calculo de la coordenada horizontal
+
+        # Imprime aceleraciones
+        # print("Aceleracion normal: ")
+        # a_normal(self)
+        # print("Aceleracion normal: ")
+        # print("Aceleracion tangencial: ")
+        # a_tangencial(self)
+        # print("Aceleracion tangencial: ")
+
+        def cord_x(self, t):
+            x = self.x0 + ((self.velocidad_inicial * cos(self.angulo)) * t)
+            return x
+
+            # funcion para el calculo de la coordenada vertical
+
+        def cord_y(self, t):
+            y = self.y0 + (((self.velocidad_inicial * (cos(self.angulo))) * t) - ((self.gravedad / 2) * (t ** 2)))
+            return y
+
+            # funcion altura maxima para graficar
+
+        def altura_max(self):
+            r = self.y0 + (((self.velocidad_inicial * (sin(self.angulo))) ** 2) / (2 * self.gravedad))
+            return r
+
+            # funcion alcance maximo para graficar
+
+        def alcance_max(self):
+            alc = self.x0 + ((self.velocidad_inicial * sin(2 * self.angulo)) / (2 * self.gravedad)) + \
+                  ((self.velocidad_inicial * cos(self.angulo)) /
+                   (self.gravedad)) * sqrt(
+                ((self.velocidad_inicial * sin(self.angulo)) ** 2) + 2 * self.y0 * self.gravedad)
+            return alc
+
+            # pop up de ingreso de datos
+
+        Pop_Up = tk.Tk()
+        Pop_Up.title("Aceleracion normal y tangencial")
+        Pop_Up.minsize(25,50)
+
+        label = tk.Label(Pop_Up)
+        label.pack()
+        a = ttk.Frame(Pop_Up)
+        a.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=5, pady=10)
+        tiempo = ttk.Label(a, text="Tiempo: ",width=5)
+        tiempo.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5, pady=5)
+
+
+        entrada = ttk.Entry(Pop_Up, justify=tk.CENTER)
+        entrada.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        entrada.insert(tk.END, "0")
+        entrada.get()
+
+
+
+
+
+
+        button = ttk.Button(Pop_Up, text='Evaluar', width=10, command=Pop_Up.destroy)
+        button.pack(side=tk.BOTTOM)
+        button2 = ttk.Button(Pop_Up, text='Evaluar', width=10, command=e.get())
+        button.pack(side=tk.BOTTOM)
+        time_usuario = button2# tiempo ingresado por el usuario(temporal)
+
+        # generamiento de la grafica
+
+        # generacion de la grafica del tiempo ingresado
+        time = np.arange(0, time_usuario, 0.01)
+        x = cord_x(self, time)
+        y = cord_y(self, time)
+
+        # grafica completa del lanzamiento
+        time_complete = np.arange(0, time_impact(self) + 4, 0.01)
+        x2 = cord_x(self, time_complete)
+        y2 = cord_y(self, time_complete)
+
+        # generacion del punto de posicion a medir
+        x3 = cord_x(self, time_usuario)
+        y3 = cord_y(self, time_usuario)
+
+        # estetica de la grafica
+        mpl.title("Aceleracion")
+        mpl.xlim(0, alcance_max(self) + self.x0)
+        mpl.ylim(0, altura_max(self) + self.y0)
+        mpl.xlabel("-Distancia-")
+        mpl.ylabel("-Altura-")
+
+        # generamiento de las curvas
+        mpl.plot(self.x0, self.y0, "k-o")  # punto pos inicial
+        mpl.plot(x, y, "y-")  # curva del usuario
+        mpl.plot(x2, y2, "k--")  # lanzamiento completo
+        mpl.plot(x3, y3, "r-o")  # punto del usuario
+        mpl.grid()  # cuadriculado
+
+        # generacion del vector con origen en el punto de posicion
+        mpl.plot()
+        mpl.show()
+
+        # posible desplazamiento con
+
+
+        # >>>>>>>>>>>>>>>>GRAFICA<<<<<<<<<<<<<<<<
+
+        # Importacion de elementos necesarios
+        import numpy as np
+        from math import cos, sin, pi
+
+        t_0 = button2# Tiempo de inicio, [s]
+        t_end = 10  # Tiempo de termino, [s]
+        N = 1000  # Numero de pasos de tiempo
+
+        # Crea una matriz de tiempo espaciada uniformemente
+        t = np.linspace(t_0, t_end, N + 1)
+
+        # Calcula el tamaño de un paso de tiempo
+        dt = t[1] - t[0]
+
+        # Crea arreglos de aceleracion, velocidad y posicion VACIOS
+        a = np.zeros((N + 1, 2))
+        v = np.zeros((N + 1, 2))
+        r = np.zeros((N + 1, 2))
+
+        # Establece las condiciones iniciales
+        v[0] = (100 * cos(pi / 6), 100 * sin(pi / 6))  # Velocidad inicial, [m/s]
+        r[0] = (0, 1)  # Posicion inicial, [m]
+
+        m = 5.5  # masa, [kg]
+        g = 10  # aceleracion de gravedad, [m/s^2]
+        d = 0.11  # diametro bala de cañon, [m]
+        A = pi * d ** 2  # Seccion transversal, [m^2]  ("corte" de 2 dimensiones en una figura de 3 dimensiones.)
+
+        def F(r, v, t):
+            return (0, -m * g) - 0.5 * A * abs(v) * v
+
+        # Resulve las ecuaciones de movimiento iterativamente
+        for i in range(N):
+            a[i] = F(r[i], v[i], t[i]) / m
+            v[i + 1] = v[i] + a[i] * dt
+            r[i + 1] = r[i] + v[i] * dt
+
+        # Obtiene las coordenadas x e y
+        x = r[:, 0]
+        y = r[:, 1]
+
+        # Importa la funcionalidad para graficar
+        import matplotlib.pyplot as plt
+
+        # grafica la figura
+        plt.plot(x, y)
+
+        # Añade caracteristicas a la grafica
+        plt.xlabel('Distancia horizontal, [m]')
+        plt.ylabel('Distancia vertical, [m]')
+        plt.title('Trayectoria del proyectil')
+        plt.grid()
+        plt.axis([0, 900, 0, 250])
+
+        # Hace que la grafica aparezca en la pantalla, para que esta sea visible al usuario
+        plt.show()
+        
+
+    def boton_vector_normalf(self):
         pass
+
+    def actualizar_grafico(self, ecuacion_x, ecuacion_y):
+        self.figura.clear()  # Refresca el gráfico
+        self.figura.add_subplot(111).plot(ecuacion_x, ecuacion_y, "--")
+        # self.figura.add_subplot(111).plot(x0, y0, 'r.')
+        self.figura.canvas.draw()
+
+        #
+        # def actualizar_grafico(self):
+        #     self.figura.clear() # Refresca el gráfico
+        #     s = np.cos(2)
+        #     self.figura.add_subplot(111).plot(self.ecuacion, self.ecuacion)
+        #     self.figura.canvas.draw()
+
+        # Lista de almacenado de datos
+
+    tiempo_datos = [0, 0]
 
     def boton_vector_normalf(self):
         Pop_Up = tk.Tk()
